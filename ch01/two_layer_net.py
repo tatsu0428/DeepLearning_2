@@ -13,7 +13,7 @@ class TwoLayerNet:
         W1 = 0.01 * np.random.randn(I, H)
         b1 = np.zeros(H)
         W2 = 0.01 * np.random.randn(H, O)
-        b2 = np.zeros(0)
+        b2 = np.zeros(O)
 
         # レイヤの生成
         self.layers = [
@@ -29,21 +29,21 @@ class TwoLayerNet:
             self.params += layer.params
             self.grads += layer.grads
 
-        # 推論を行う
-        def predict(self, x):
-            for layer in self.layers:
-                x = layer.forward(x)
-            return x
+    # 推論を行う
+    def predict(self, x):
+        for layer in self.layers:
+            x = layer.forward(x)
+        return x
 
-        # 順伝播を行う
-        def forward(self, x, t):
-            score = self.predict(x)
-            loss = self.loss_layer.forward(score, t)
-            return loss
+    # 順伝播を行う
+    def forward(self, x, t):
+        score = self.predict(x)
+        loss = self.loss_layer.forward(score, t)
+        return loss
 
-        # 逆伝播を行う
-        def backward(self, dout=1):
-            dout = self.loss_layer.backward(dout)
-            for layer in reversed(self.layers):
-                dout = layer.backward(dout)
-            return dout
+    # 逆伝播を行う
+    def backward(self, dout=1):
+        dout = self.loss_layer.backward(dout)
+        for layer in reversed(self.layers):
+            dout = layer.backward(dout)
+        return dout
