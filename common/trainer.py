@@ -4,6 +4,8 @@ sys.path.append("..")
 import numpy
 import time
 import matplotlib.pyplot as plt
+import numpy as np
+from common.util import clip_grads
 
 class Trainer:
     def __init__(self, model, optimizer):
@@ -43,7 +45,7 @@ class Trainer:
                 loss_count += 1
 
                 # 評価
-                if (eval_interval is not None) and (iters % eval_interval) == 0:
+                if (eval_interval is not None) and ((iters + 1) % eval_interval) == 0:
                     avg_loss = total_loss / loss_count
                     elapsed_time = time.time() - start_time
                     print('| epoch %d |  iter %d / %d | time %d[s] | loss %.2f'
