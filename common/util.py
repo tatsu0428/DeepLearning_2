@@ -14,3 +14,76 @@ def clip_grads(grads, max_norm):
     if rate < 1:
         for grad in grads:
             grad *= rate
+
+
+def preprocess(text):
+
+    '''
+    コーパスと単語と単語IDの対応表の作成
+
+    :param text: 文字列
+    :return コーパス，単語から単語IDを検索する辞書，単語IDから単語を検索する辞書
+    '''
+
+    text = text.lower()
+    text = text.replace(".", " .")
+    words = text.split(" ")
+
+    word_to_id = {}
+    id_to_word = {}
+
+    for word in words:
+        if word not in word_to_id:
+            new_id = len(word_to_id)
+            word_to_id[word] = new_id
+            id_to_word[new_id] = word
+
+    corpus = np.array([word_to_id[w] for w in words])
+
+    return corpus, word_to_id, id_to_word
+
+
+def create_co_matrix(corpus, vocab_size, window_size=1):
+
+    '''
+    共起行列の作成
+
+    :param corpus: コーパス（単語IDのリスト）
+    :param vocab_size: 語彙数
+    :param window_size: ウィンドウサイズ（サイズが1のときは，単語の左右1単語がコンテキスト）
+    :return 共起行列
+    '''
+
+    corpus_size = len(corpus)
+    co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
+
+    for idx, word_id in enumerate(corpus):
+        for i in range(1, window_size + 1):
+            left_idx = idx - i
+            right_idx = idx + i
+
+            if left_idx >= 0:
+                left_word_id = corpus[left_idx]
+                co_matrix[word_id, left_word_id] += 1
+
+            if right_idx < corpus_size:
+                right_word_id = corpus[right_idx]
+                co_matrix[word_id, right_word_id] += 1
+
+    return co_matrix
+
+
+def cos_similarity(x, y, eps=1e-8):
+    '''
+    コサイン類似度の算出
+
+    :param x: ベクトル
+    :param y: ベクトル
+    :param eps: 0除算防止のための微小値
+    :return: コサイン類似度
+    '''
+
+    nx = x / (np.sqrt(np.sum(x ** 2)) + eps)
+    ny = y / (np.sqrt(np.sum(y ** 2)) + eps)
+
+    return np.dot(nx, ny)
