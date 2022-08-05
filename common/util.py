@@ -17,7 +17,6 @@ def clip_grads(grads, max_norm):
 
 
 def preprocess(text):
-
     '''
     コーパスと単語と単語IDの対応表の作成
 
@@ -44,7 +43,6 @@ def preprocess(text):
 
 
 def create_co_matrix(corpus, vocab_size, window_size=1):
-
     '''
     共起行列の作成
 
