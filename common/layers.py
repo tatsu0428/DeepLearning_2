@@ -6,7 +6,7 @@ from common.function import softmax, cross_entropy_error
 class MatMul:
     def __init__(self, W):
         self.params = [W]
-        self.grads = [np.zero_like(W)]
+        self.grads = [np.zeros_like(W)]
         self.x = None
 
     def forward(self, x):
