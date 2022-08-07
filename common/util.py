@@ -133,6 +133,7 @@ def ppmi(C, verbose=False, eps=1e-8):
     :param verbose: 進行状況を出力するかどうか
     :return: PPMI行列
     '''
+
     M = np.zeros_like(C, dtype=np.float32)
     N = np.sum(C)
     S = np.sum(C, axis=0)
@@ -150,3 +151,48 @@ def ppmi(C, verbose=False, eps=1e-8):
                     print("%.1f%% done." % (100*cnt/total))
 
     return M
+
+
+def create_contexts_target(corpus, window_size=1):
+    '''
+    コンテキストとターゲットの作成
+
+    :param corpus: コーパス（単語IDのリスト）
+    :param window_size: ウィンドウサイズ（ウィンドウサイズが1のときは，単語の左右1単語がコンテキスト）
+    '''
+
+    target = corpus[window_size:-window_size]
+    contexts = []
+
+    for idx in range(window_size, len(corpus)-window_size):
+        cs = []
+        for t in range(-window_size, window_size+1):
+            if t == 0:
+                continue
+            cs.append(corpus[idx + t])
+        contexts.append(cs)
+
+    return np.array(contexts), np.array(target)
+
+
+def convert_one_hot(corpus, vocab_size):
+    '''one-hot表現への変換
+    :param corpus: 単語IDのリスト（1次元もしくは2次元のNumPy配列）
+    :param vocab_size: 語彙数
+    :return: one-hot表現（2次元もしくは3次元のNumPy配列）
+    '''
+    N = corpus.shape[0]
+
+    if corpus.ndim == 1:
+        one_hot = np.zeros((N, vocab_size), dtype=np.int32)
+        for idx, word_id in enumerate(corpus):
+            one_hot[idx, word_id] = 1
+
+    elif corpus.ndim == 2:
+        C = corpus.shape[1]
+        one_hot = np.zeros((N, C, vocab_size), dtype=np.int32)
+        for idx_0, word_ids in enumerate(corpus):
+            for idx_1, word_id in enumerate(word_ids):
+                one_hot[idx_0, idx_1, word_id] = 1
+
+    return one_hot
