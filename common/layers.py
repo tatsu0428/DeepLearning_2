@@ -39,6 +39,7 @@ class Sigmoid:
         return dx
 
 
+# Sigmoid with Lossレイヤ
 class SigmoidWithLoss:
     def __init__(self):
         self.params, self.grads = [], []
